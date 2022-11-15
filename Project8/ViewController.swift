@@ -156,10 +156,14 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        loadLevel()
     }
 
     @objc func letterTapped(_ sender: UIButton) {
+        guard let buttonTitle = sender.titleLabel?.text else { return }
+        currentAnswer.text = currentAnswer.text?.appending(buttonTitle)
+        activatedButtons.append(sender)
+        sender.isHidden = true
     }
 
     @objc func submitTapped(_ sender: UIButton) {
@@ -180,6 +184,7 @@ class ViewController: UIViewController {
                 
                 for (index, line) in lines.enumerated() {
                     let parts = line.components(separatedBy: ": ")
+                    
                     let answer = parts[0]
                     let clue = parts[1]
                     
@@ -196,6 +201,16 @@ class ViewController: UIViewController {
         }
         
         // Now configure the buttons and labels
+        cluesLabel.text = clueString.trimmingCharacters(in: .whitespacesAndNewlines)
+        answersLabel.text = solutionString.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        letterBits.shuffle()
+
+        if letterBits.count == letterButtons.count {
+            for i in 0 ..< letterButtons.count {
+                letterButtons[i].setTitle(letterBits[i], for: .normal)
+            }
+        }
     }
 
 }
