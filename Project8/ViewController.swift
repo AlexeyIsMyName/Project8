@@ -20,6 +20,9 @@ class ViewController: UIViewController {
 
     var score = 0 {
         didSet {
+            if score < 0 {
+                score = 0
+            }
             scoreLabel.text = "Score: \(score)"
         }
     }
@@ -140,6 +143,8 @@ class ViewController: UIViewController {
                 // calculate the frame of this button using its column and row
                 let frame = CGRect(x: col * width, y: row * height, width: width, height: height)
                 letterButton.frame = frame
+                letterButton.layer.borderWidth = 0.3
+                letterButton.layer.borderColor = UIColor.gray.cgColor
                 
                 // add it to the buttons view
                 buttonsView.addSubview(letterButton)
@@ -183,7 +188,7 @@ class ViewController: UIViewController {
             currentAnswer.text = ""
             score += 1
             
-            if score % 7 == 0 {
+            if letterButtons.allSatisfy({ $0.isHidden }) {
                 let ac = UIAlertController(title: "Well done!",
                                            message: "Are you ready for the next level?",
                                            preferredStyle: .alert)
@@ -194,10 +199,22 @@ class ViewController: UIViewController {
                 
                 present(ac, animated: true)
             }
+        } else {
+            let ac = UIAlertController(title: "Well try!",
+                                       message: "There is no such word!",
+                                       preferredStyle: .alert)
+            
+            ac.addAction(UIAlertAction(title: "Let's try again!",
+                                       style: .default, handler: { [self] _ in
+                score -= 1
+                clearTapped()
+            }))
+            
+            present(ac, animated: true)
         }
     }
 
-    @objc func clearTapped(_ sender: UIButton) {
+    @objc func clearTapped() {
         currentAnswer.text = ""
         
         for btn in activatedButtons {
